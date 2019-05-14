@@ -19,6 +19,7 @@ class App extends React.Component {
 
     this.state = DEFAULT_STATE
     this.handleChange = this.handleChange.bind(this)
+    this.handleSubmit = this.handleSubmit.bind(this)
   }
 
   handleChange(event) {
@@ -26,6 +27,10 @@ class App extends React.Component {
       ...DEFAULT_STATE,
       query: event.target.value
     })
+  }
+
+  handleSubmit(event) {
+    event.preventDefault()    
   }
 
 
@@ -36,7 +41,7 @@ class App extends React.Component {
 
     return (
       <ApolloProvider client={client}>
-        <form>
+        <form onSubmit={this.handleSubmit}>
           <input value={query} onChange={this.handleChange}></input>
         </form>
         <Query
