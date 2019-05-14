@@ -4,7 +4,7 @@ import { ApolloProvider, Mutation, Query } from 'react-apollo'
 import { ADD_STAR, REMOVE_STAR, SEARCH_REPOSITORIES } from './graphql'
 
 const StartButton = props => {
-  const node = props.node
+  const { node, query, first, last, before, after } = props
   const totalCount = node.stargazers.totalCount
   const viewerHasStarred = node.viewerHasStarred
   const starCount = totalCount === 1 ? '1 star' : `${totalCount} stars`
@@ -24,7 +24,18 @@ const StartButton = props => {
     )
   }
   return (
-    <Mutation mutation={viewerHasStarred ? REMOVE_STAR : ADD_STAR}>
+    <Mutation
+      mutation={viewerHasStarred ? REMOVE_STAR : ADD_STAR}
+      refetchQueries={MutationResult => {
+        console.log({MutationResult})
+        return [
+          {
+            query: SEARCH_REPOSITORIES,
+            variables: { query, first, last, before, after }
+          }
+        ]
+      } }
+    >
       {
         addOrRemoveStar => <StarStatus addOrRemoveStar={addOrRemoveStar} />
       }
@@ -117,11 +128,11 @@ class App extends React.Component {
                           <li key={node.id}>
                             <a href={node.url} target="_blank" rel="noopener noreferrer">{node.name}</a>
                             &nbsp;
-                            <StartButton node={node} />
+                            <StartButton node={node} {...{query, first, last, after, before}} />
                           </li>
                         )
                       })
-                    }
+                    } 
                   </ul>
 
                   {console.log(search.pageInfo)}
